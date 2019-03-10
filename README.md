@@ -7,11 +7,12 @@ smi 자막을 srt로 변환해주는 파이썬 프로그램 (EMBY 라이브러�
 ## 요구사항:
 - Python 2/3 (2.7~/3.6~)
 - cchardet
+- termcolor
 
 ## 설치:
 - cchardet 설치:
 ~~~bash
-pip install cchardet
+pip install cchardet termcolor
 ~~~
 - smi2srt 설치:
 1. smi2srt 파일의 경로를 $PATH environment에 추가. 혹은 /usr/local/bin에 파일 복사
