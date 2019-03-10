@@ -4,6 +4,8 @@ import re
 import cchardet
 import os
 import argparse
+import traceback
+from termcolor import colored, cprint
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l", "--language", help="choose language to convert", default="kr")
@@ -46,7 +48,7 @@ def parse(smi): # smi parsing algorithm written in PYSAMI by g6123 (https://gith
                 content = dict(map(parse_p, split_content(item, 'p')))
                 data.append([timecode, content])
     except:
-        print("Conversion ERROR: maybe this file is not supported.")
+        cprint("Conversion ERROR: maybe this file is not supported.", "red", attrs=['bold'])
     return data
 
 def convert(data, lang): # written by ncianeo
@@ -86,10 +88,10 @@ def convert(data, lang): # written by ncianeo
             continue
     return srt
 
-print("media library path:", PATH)
+cprint("media library path: "+PATH, 'white', attrs=['bold'])
 success=[]
 fail=[]
-print("finding and converting started...")
+cprint("finding and converting started...", 'white', attrs=['bold'])
 for p,w,f in os.walk(PATH):
     for file_name in f:
         if file_name[-4:].lower()=='.smi':
@@ -101,19 +103,20 @@ for p,w,f in os.walk(PATH):
                 smi = smi_raw.decode(encoding['encoding'])
                 srt_file = codecs.open(os.path.join(p,os.path.splitext(file_name)[0]+'.srt'),'w',encoding='utf-8')
                 srt_file.write(convert(parse(smi),LANG))
-                success.append(file_name)
+                success.append({'name': file_name})
             except:
-                fail.append(file_name)
+                fail.append({'name': file_name, 'error': traceback.format_exc()})
 
-smi_list = list(set(success) | set(fail))
-print('\nfound .smi subtitles:')
-for smi in smi_list:
-    print(smi)
+smi_list = list(set(map(lambda x: x['name'], success)) | set(map(lambda x: x['name'], fail)))
+cprint('\nfound .smi subtitles:', 'white', attrs=['bold'])
+for smi_name in smi_list:
+    cprint(smi_name, 'white')
 
-print('\nworked .smi subtitles:')
+cprint('\nworked .smi subtitles:', 'green', attrs=['bold'])
 for smi in success:
-    print(smi)
+    cprint(smi['name'],'green')
 
-print('\nfailed .smi subtitles:')
+cprint('\nfailed .smi subtitles:', 'red', attrs=['bold'])
 for smi in fail:
-    print(smi)
+    cprint(smi['name'], 'red')
+    cprint(smi['error'], 'magenta')
