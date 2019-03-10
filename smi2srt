@@ -59,9 +59,6 @@ def parse(smi): # smi parsing algorithm written in PYSAMI by g6123 (https://gith
     return data
 
 def convert(data, lang): # written by ncianeo
-
-    print(len(data))
-
     if lang not in data[0][1].keys():
         print("lang: %s is not found. will use the first lang in the smi file." %lang)
         i=0
