@@ -16,6 +16,12 @@ args = parser.parse_args()
 PATH = args.dir
 LANG = args.language.upper()+"CC"
 
+def output_postfix(lang):
+    if LANG == 'KRCC':
+        return ".ko"
+    elif LANG == "ENCC":
+        return ".en"
+    return ""
 
 def parse(smi): # smi parsing algorithm written in PYSAMI by g6123 (https://github.com/g6123/PySAMI)
     search = lambda string, pattern: re.search(pattern, string, flags=re.I)
@@ -49,9 +55,13 @@ def parse(smi): # smi parsing algorithm written in PYSAMI by g6123 (https://gith
                 data.append([timecode, content])
     except:
         cprint("Conversion ERROR: maybe this file is not supported.", "red", attrs=['bold'])
+        cprint(traceback.format_exc(), "magenta")
     return data
 
 def convert(data, lang): # written by ncianeo
+
+    print(len(data))
+
     if lang not in data[0][1].keys():
         print("lang: %s is not found. will use the first lang in the smi file." %lang)
         i=0
@@ -101,7 +111,7 @@ for p,w,f in os.walk(PATH):
                     smi_raw = smi_file.read()
                     encoding = cchardet.detect(smi_raw)
                 smi = smi_raw.decode(encoding['encoding'])
-                srt_file = codecs.open(os.path.join(p,os.path.splitext(file_name)[0]+'.srt'),'w',encoding='utf-8')
+                srt_file = codecs.open(os.path.join(p,os.path.splitext(file_name)[0]+output_postfix(LANG)+'.srt'),'w',encoding='utf-8')
                 srt_file.write(convert(parse(smi),LANG))
                 success.append({'name': file_name})
             except:
