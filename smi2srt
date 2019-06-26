@@ -110,9 +110,9 @@ for p,w,f in os.walk(PATH):
                 smi = smi_raw.decode(encoding['encoding'])
                 output_filename = os.path.join(p,os.path.splitext(file_name)[0])
                 postfix = output_postfix(LANG)
-                if not output_postfix.endsWith(postfix):
-                    output_filename += (postfix+".srt")
-                srt_file = codecs.open(output_filename,'w',encoding='utf-8')
+                if not output_filename.endswith(postfix):
+                    output_filename += postfix
+                srt_file = codecs.open(output_filename+".srt",'w',encoding='utf-8')
                 srt_file.write(convert(parse(smi),LANG))
                 success.append({'name': file_name})
             except:
